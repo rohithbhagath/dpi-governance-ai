@@ -5,6 +5,11 @@ import os
 
 app = FastAPI()
 
+# Add the new root status route here:
+@app.get("/api")
+def root_status():
+    return {"status": "DPI Governance AI Backend is live with Gemini!"}
+
 # Initialize the Gemini client using environment variable
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
