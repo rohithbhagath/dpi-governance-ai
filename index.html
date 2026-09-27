@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DPI Governance & Infrastructure AI</title>
+    <!-- Tailwind CSS for rapid modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-indigo-900 text-white shadow-md py-4 px-6 mb-8">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">🇮🇳 Build with AI: DPI & Governance Portal</h1>
+            <span class="text-xs bg-indigo-700 px-3 py-1 rounded-full text-indigo-200">Powered by Gemini AI</span>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-4 pb-12">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">
+            <h2 class="text-lg font-semibold mb-2">Citizen Grievance & Request Ingestion</h2>
+            <p class="text-sm text-slate-500 mb-4">Type or paste a raw citizen voice-transcription or feedback in any regional Indian language below:</p>
+            
+            <textarea id="grievanceInput" rows="4" class="w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm mb-4" placeholder="e.g., Hamaare gaon Rampur mein paani ki pipeline toot gayi hai..."></textarea>
+            
+            <button onclick="analyzeGrievance()" id="submitBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-2.5 rounded-lg text-sm transition-all shadow-sm">
+                Analyze & Generate Policy Brief
+            </button>
+        </div>
+
+        <!-- Result Box -->
+        <div id="resultContainer" class="hidden bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <h3 class="text-md font-semibold text-indigo-900 mb-3 border-b pb-2">Structured Policy Brief & Action Plan</h3>
+            <div id="outputContent" class="text-sm space-y-3 whitespace-pre-line text-slate-700 leading-relaxed"></div>
+        </div>
+    </main>
+
+    <script>
+        async function analyzeGrievance() {
+            const text = document.getElementById('grievanceInput').value;
+            const btn = document.getElementById('submitBtn');
+            const resultContainer = document.getElementById('resultContainer');
+            const outputContent = document.getElementById('outputContent');
+
+            if (!text.trim()) {
+                alert('Please enter a grievance text first.');
+                return;
+            }
+
+            btn.textContent = 'Processing with Gemini AI...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultContainer.classList.remove('hidden');
+                    outputContent.textContent = data.analysis;
+                } else {
+                    alert('Error: ' + (data.detail || 'Something went wrong'));
+                }
+            } catch (err) {
+                alert('Failed to connect to backend server. Make sure server.py is running.');
+                console.error(err);
+            } finally {
+                btn.textContent = 'Analyze & Generate Policy Brief';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
+
+
